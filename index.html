@@ -1,36 +1,983 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+ <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>梁健略帅的破网站</title>
-    <style>
-        h1 {
-            text-align: center;
-            color: rgb(6, 158, 246);
-        }
-        div{
-            text-align: center;
-        }
-        a{
-            text-align: center; 
-            color: red;
-        }
-       
-    </style>
-</head>
+    <meta name="viewport" content="width=device-width" />
+    <title>超级画板</title>
+   
+    <style>@media screen and (orientation: landscape) {
 
-<body>
-    <div>
-    <h1>梁健略帅</h1>
+        #myCanvasMobile {
+            display: none;
+        }
     
-    <a href="http://47.109.88.222/">点击进入电脑超级画板</a></div>
-    <div>
-      
-        <img width=device-width src="https://th.bing.com/th/id/R.5d931f9384a62ee0967dbb93585d4fec?rik=Zq0S4rI7n9T2ng&riu=http%3a%2f%2fn.sinaimg.cn%2fent%2ftransform%2f20161223%2ffou2-fxyxusa4964282.jpg&ehk=X1Y6KqMJZuCsTPpO9quHf2LiUmaA0D%2bnM3LjrJL9FA8%3d&risl=&pid=ImgRaw&r=0" alt="这是梁健">
-    </div>
-</body>
+        .canvas_container {
+            border: 2px solid black;
+            width: 590px;
+            height: 590px;
+            margin: 0 auto;
+    
+            background: url("../image/artboardForComputer.jpg") no-repeat;
+    
+        }
+    
+        #myCanvasComputer {
+            background-color: white;
+            margin-left: 27px;
+            margin-top: 71px;
+        }
+    
+        .contorller {
+    
+            height: 60px;
+            text-align: center;
+    
+        }
+    
+        #canvas_container {
+            display: flex;
+        }
+    
+        #showHistory {
+            border: 2px solid black;
+            width: 200px;
+            height: 600px;
+            flex: 2;
+        }
+    
+        .button {
+            display: inline;
+            width: 300px;
+        }
+    
+        .shapeSelect {
+            display: inline;
+            width: 300px;
+        }
+    
+        .lineWidthAndColor {
+            display: inline;
+            width: 300px;
+        }
+    
+        .fill {
+            display: inline;
+            width: 300px;
+        }
+    
+        #touchMessage {
+            width: 150px;
+    
+        }
+    
+        #locations {
+            display: block;
+        }
+    
+        #locationMessage {
+            width: 150px;
+            flex: 1;
+        }
+    
+        .storages {
+            display: inline;
+            width: 300px;
+        }
+    
+    
+        #vid {
+            margin-top: 30px;
+            margin-left: 160px;
+    
+            width: 267px;
+            height: 158px;
+        }
+    
+    
+        /* #vid{ */
+        /* display: none; */
+    
+        /* } */
+    
+    }
+    
+    @media screen and (orientation: portrait) {
+
+#myCanvasComputer {
+
+    display: none;
+}
+
+#myCanvasMobile {
+    margin-left: 11px;
+    margin-top: 12px;
+    background-color: white;
+}
+
+
+.canvas_container {
+    border: 2px solid black;
+    margin: 0 auto;
+    width: 360px;
+    height: 377px;
+    background: url("../image/artboardForMobile.jpg") no-repeat;
+
+}
+
+.contorller {
+    width: 350px;
+    height: 130px;
+}
+
+#showHistory {
+    border: 2px solid black;
+    width: 380px;
+    height: 350px;
+    margin: 0 auto;
+
+}
+
+#touchMessage {
+    width: 300px;
+    margin: 0 auto;
+    padding-left: 20px;
+    height: 60px;
+
+}
+
+#locationMessage {
+    width: 300px;
+    margin: 0 auto;
+    padding-left: 20px;
+}
+
+#vid {
+    background-color: aqua;
+    width: 170px;
+    height: 120px;
+    margin-left: 95px;
+}
+
+
+}* {
+    margin: 0;
+    padding: 0 ;
+    transition: 0.5s;
+    background-color:#c2c1c73d;
+}
+
+.contorller{
+    padding-top: 10px;
+    background-color: #abb4c3;
+    margin: 0 auto;
+}
+#showHistory{
+    background-color: #7d83a3;
+    
+}
+#touchMessage{  
+    border: 2px solid black;
+    background-color: #abb4c3;
+    
+}
+
+#locationMessage{
+    border: 2px solid black;
+    background-color: #abb4c3;
+    border: 1px solid black;
+}
+button{
+background-color: #706e7c;
+ border-radius: 8px 8px 8px 8px;
+
+
+}
+#myCanvasComputer{
+    background-color: white;
+}
+#download{
+    font-size: 14px;
+    border: 1px solid black;
+    background-color: #706e7c;
+    color: black;
+    text-decoration: none;
+    border-radius: 8px 8px 8px 8px;
+    
+
+}
+
+
+</style>
+    
+ </head>
+
+    <body>
+        <div class="contorller">
+            <div class="button"><button id="clearButton">清空画板</button>
+                <button id="eraserButton">橡皮擦</button>
+                <button id="previousStep">撤回到上一步</button>
+                <button id="nextStep"> 撤回到下一步</button>
+            </div>
+            
+            <div class="shapeSelect">
+                <label for="shapeSelect">绘图类型:</label>
+
+                <label for="drawing">画笔:</label>
+                <input type="radio" id="drawing" name="draw" checked>
+
+                <label for="circleadio">圆:</label>
+                <input type="radio" id="circleadio" name="draw">
+
+                <label for="rectangleradio">矩形:</label>
+                <input type="radio" id="rectangleradio" name="draw">
+            </div>
+            
+            <div class="lineWidthAndColor">
+                <label for="lineWidth">线宽:</label>
+                <select id="lineWidth">
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="7">7</option>
+                    <option value="9">9</option>
+
+                </select>
+                <label for="color">画笔颜色:</label>
+                <input type="color" id="color">
+
+            </div>
+            <div class="fill">
+                是否填充:
+                <input type="radio" id="yesradio" name="fillStyle" value="1">
+                <label for="yesradio">是</label>
+                <input type="radio" id="noradio" name="fillStyle" value="0" checked>
+                <label for="noradio">否</label>
+                <label for="fillcolorRadio">填充颜色:</label>
+                <input type="color" id="fillcolorRadio">
+            </div>
+            <div class="storages">
+                <button id="cmera">点击拍照作画</button>
+                <button id="turndown">关闭摄像头</button>
+                <button id="store">保存</button>
+                <!-- <button id="download"> 下载</button> -->
+                <a href="#" id="download"> 下载</a>
+
+            </div>
+          
+              
+        </div>
+
+        <div id="canvas_container">
+            <div id="touchMessage">触点位置和类型:
+                <div id="touchPosion"></div>
+                <div id="touchtype"></div>
+            </div>
+                <div id="locationMessage">当前创作地点:
+                   <div id="locations"></div>
+                </div>
+
+                <div class="canvas_container">
+                    <canvas id="myCanvasMobile" width="341" height="242"></canvas>
+                    <canvas id="myCanvasComputer" width="530" height="315"></canvas>
+                    <video src="#" id="vid"></video>
+                </div>
+            
+            <div id="showHistory" >
+                <div id="topic">绘画保存记录:</div>
+            </div>
+        </div>
+
+       <script>
+        let myCanvasMobile = document.getElementById('myCanvasMobile')
+        let myCanvasComputer = document.getElementById('myCanvasComputer')
+        let clearButton = document.getElementById('clearButton')
+        let eraserButton = document.getElementById('eraserButton')
+        let previousStep = document.getElementById('previousStep')
+        let nextStep = document.getElementById('nextStep')
+        let drawing = document.getElementById('drawing')
+        let circleadio = document.getElementById('circleadio')
+        let rectangleradio = document.getElementById('rectangleradio')
+        let lineWidth = document.getElementById('lineWidth')
+        let color = document.getElementById('color')
+        let yesradio = document.getElementById('yesradio')
+        let noradio = document.getElementById('noradio')
+        let fillcolorRadio = document.getElementById('fillcolorRadio')
+        let store = document.getElementById('store')
+        let dawnload = document.querySelector('download')
+        let touchMessage = document.getElementById('touchMessage')
+        let touchtype = document.getElementById('touchtype')
+        let touchPosion = document.getElementById('touchPosion')
+        let downloads = document.getElementById('download')
+        
+        if (window.orientation === 0 || window.orientation === 180) {
+            // 竖屏模式下的代码
+            touchMessage.innerHTML = '横屏触点类型和位置:'
+            // touchMessage.innerHTML = '横屏'
+            const ctx = myCanvasMobile.getContext('2d');
+            //现在画布上填充白色,方便保存
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
+            //记录保存
+            let undoStack = [];
+            let redoStack = [];
+            //判断当前状态
+            let isDrawing = false;
+            //位置
+            let lastX, lastY;
+            //是否在使用橡皮擦
+            let clear = false;
+            //清空画板
+            clearButton.addEventListener("click", function () {
+                ctx.clearRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
+        
+                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                freshCvs();
+            });
+            //橡皮擦
+            eraserButton.addEventListener("click", function () {
+                clear = true;
+                drawing.checked = false;
+                circleadio.checked = false;
+                rectangleradio.checked = false;
+            });
+        //   •	touchstart：手指触摸屏幕事件；
+        // •	touchmove：手指在屏幕上滑动事件；
+        // •	touchend：手指离开屏幕事件；
+        // •	touchcancel：触摸事件被取消事件。
+        
+        
+        
+            //定义存储画板状态,null为没有状态,实现画圆画矩形无延迟
+            let imageData = null;
+        
+            myCanvasMobile.addEventListener("touchstart", evt=> {
+                evt.preventDefault()
+                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
+                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
+                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)}    `
+                isDrawing = true;
+                lastX = evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset;
+                lastY = evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset;
+                //获取图片信息存储到堆栈中
+                undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
+                redoStack = [];
+        
+            });
+            myCanvasMobile.addEventListener("touchmove", evt=> {
+                evt.preventDefault()
+                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
+                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
+                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)} `
+        
+                if (isDrawing) {
+                    draw(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset,
+                        evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset);
+        
+                }
+            });
+        
+            myCanvasMobile.addEventListener("touchend", evt=> {
+                evt.preventDefault()
+                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
+                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
+                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)} `
+                isDrawing = false;
+                //获取图片信息存储到堆栈中
+                undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
+                redoStack = [];
+            });
+        
+        
+            //实时轨迹
+            let freshCvs = () => {
+                ctx.clearRect(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                if (imageData) {
+                    ctx.putImageData(imageData, 0, 0, 0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                }
+            }
+            draw = (x, y) => {
+                //画线条
+                if (drawing.checked) {
+                    clear = false;
+                    ctx.strokeStyle = color.value;
+                    ctx.fillStyle = fillcolorRadio.value;
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.closePath();
+                    lastX = x;
+                    lastY = y;
+                }
+                //橡皮擦
+                if (clear === true) {
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.closePath();
+                    lastX = x;
+                    lastY = y;
+                }
+                //画圆
+                if (circleadio.checked) {
+                    freshCvs();
+                    clear = false;
+                    ctx.beginPath();
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.strokeStyle = color.value;
+                    var radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+                    ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI, true)
+                    ctx.stroke();
+                    if (yesradio.checked) {
+                        ctx.fillStyle = fillcolorRadio.value
+                        ctx.fill()
+                    }
+                    ctx.closePath();
+                }
+                //画矩形
+                if (rectangleradio.checked) {
+                    clear = false;
+                    freshCvs();
+                    ctx.beginPath();
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.rect(x, y, lastX - x, lastY - y);
+                    ctx.stroke(); //画矩形边
+                    if (yesradio.checked) {
+                        ctx.fillStyle = fillcolorRadio.value
+                        ctx.fill()
+                    }
+                    ctx.closePath();
+                }
+            }
+        
+            //执行撤销操作,在每次鼠标按下和离开时获取图片信息并存储到堆栈
+            previousStep.addEventListener('click', function undo() {
+                for (let i = 0; i < 2; i++) {
+                    if (undoStack.length > 0) {
+                        redoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
+                        ctx.putImageData(undoStack.pop(), 0, 0);
+                    }
+                }
+                
+                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                freshCvs();
+            })
+        
+            nextStep.addEventListener('click', function redo() {
+                for (let i = 0; i < 2; i++) {
+                    if (redoStack.length > 0) {
+                        undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
+                        ctx.putImageData(redoStack.pop(), 0, 0);
+                    }
+                }
+                
+                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                freshCvs();
+            })
+            //设置最多保存十张
+            let count = 0;
+        
+            //保存图片到容器里
+            store.addEventListener('click', e=> {
+                // store.innerHTML=`已保存${count}张图片`;
+                if (count < 6) {
+                    var imgElement = document.createElement('img');
+                    var del = document.createElement('button')
+                    var stor = document.createElement('a')
+                    //删除图片设置样式
+                    
+                    //下载图片并设置样式
+                    stor.innerHTML = "下载";
+                    stor.type = "a";
+                    stor.style.backgroundColor = '#706e7c'
+                    stor.style.borderRadius = '8px 8px 8px 8px'
+                    stor.style.fontSize = '14px'
+                    stor.style.border = '1px solid black'
+                    
+                    //在容器中存储图片和按钮
+                    imgElement.style.width = '130px';
+                    imgElement.style.height = '95px';
+                    imgElement.style.backgroundColor = "white"
+                    imgElement.src = myCanvasMobile.toDataURL();
+                    showHistory.appendChild(del)
+                    showHistory.appendChild(stor)
+                    showHistory.appendChild(imgElement)
+                    count++;
+                    //为每个图片添加下载操作
+                    stor.addEventListener('click', function () {
+                        count--;
+                        //下载图片
+                        stor.href = imgElement.src;
+                        stor.download = 'masterpiece.png';
+                        //移除图片
+                        imgElement.remove();
+                        del.remove();
+                        stor.remove();
+                    })
+                    del.innerHTML = "删除";
+                    del.type = "button";
+                    //为每个图片添加删除操作
+                    del.addEventListener('click', function () {
+                        count--
+                        imgElement.remove();
+                        del.remove();
+                        stor.remove();
+                    })
+        
+                }
+                else {
+                    alert('保存六张图片到达上限!')
+                }
+            })
+        
+        
+        
+            //置顶下载链接
+            downloads.addEventListener('click', () => {
+                downloads.href = myCanvasMobile.toDataURL();
+                downloads.download = 'masterpiece.png';
+            })
+        
+         
+        
+        
+            // 拍照上传
+            let turndown = document.getElementById('turndown');
+            let videos = document.getElementById('vid')
+            let cmera = document.getElementById('cmera')
+            //判断摄像头状态
+            let cmeraStatus = true;
+            // 当用户点击拍照按钮时，将 Canvas 转换为图像并显示在页面上
+            cmera.addEventListener('click', () => {
+               
+                // 获取摄像头视频流
+                if (cmeraStatus) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then((stream) => {
+                            cmera.innerHTML = '拍照'
+                            videos.srcObject = stream;
+                            videos.play();
+                        });
+                    cmeraStatus = false;
+                }
+                //拍照上传
+                // 在 Canvas 上绘制视频帧
+                ctx.drawImage(videos, 0, 0, myCanvasMobile.width, myCanvasMobile.height);
+               
+                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
+                freshCvs();
+            });
+        
+        
+            turndown.addEventListener('click', () => {
+               if(!cmeraStatus){
+                cmeraStatus = true;
+                cmera.innerHTML = '点击拍照作画'
+                // 关闭摄像头
+                const stream = videos.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => {
+                    track.stop();
+                });
+                videos.srcObject = null;
+               }
+               
+               
+               
+            })
+        
+        
+        }
+        
+        
+        
+        // if (window.orientation === 90 || window.orientation === -90)
+        else {
+            // 横屏模式下的代码
+            // touchMessage.innerHTML = '横屏'
+            const ctx = myCanvasComputer.getContext('2d');
+            //现在画布上填充白色,方便保存
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
+            //记录保存
+            let undoStack = [];
+            let redoStack = [];
+            //判断当前状态
+            let isDrawing = false;
+            //位置
+            let lastX, lastY;
+            //是否在使用橡皮擦
+            let clear = false;
+            //清空画板
+            clearButton.addEventListener("click", function () {
+                ctx.clearRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                freshCvs();
+            });
+            //橡皮擦
+            eraserButton.addEventListener("click", function () {
+                clear = true;
+                drawing.checked = false;
+                circleadio.checked = false;
+                rectangleradio.checked = false;
+            });
+            //      •	click：鼠标单击事件；
+            // •	dblclick：鼠标双击事件；
+            // •	mousedown：鼠标按下事件；
+            // •	mouseup：鼠标松开事件；
+            // •	mousemove：鼠标移动事件；
+            // •	mouseover：鼠标移入事件；
+            // •	mouseout：鼠标移出事件。
+        
+        
+            //定义存储画板状态,null为没有状态,实现画圆画矩形无延迟
+            let imageData = null;
+        
+            myCanvasComputer.addEventListener("mousedown", function (evt) {
+                evt.preventDefault()
+                touchtype.innerHTML = `(${evt.type})`
+                isDrawing = true;
+                lastX = evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset;
+                lastY = evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset;
+                //获取图片信息存储到堆栈中
+                undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
+                redoStack = [];
+        
+            });
+            myCanvasComputer.addEventListener("mousemove", function (evt) {
+                evt.preventDefault()
+                touchtype.innerHTML = `(${evt.type})`
+                touchPosion.innerHTML = `X=${evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset}<br>
+                Y=${evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset}`
+        
+                if (isDrawing) {
+                    draw(evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset,
+                        evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset);
+        
+                }
+            });
+        
+            myCanvasComputer.addEventListener("mouseup", function (evt) {
+                evt.preventDefault()
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                touchtype.innerHTML = `(${evt.type})`
+                isDrawing = false;
+                //获取图片信息存储到堆栈中
+                undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
+                redoStack = [];
+            });
+        
+        
+            //实时轨迹关键代码
+            let freshCvs = () => {
+                ctx.clearRect(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                if (imageData) {
+                    ctx.putImageData(imageData, 0, 0, 0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                }
+            }
+            draw = (x, y) => {
+                //画线条
+                if (drawing.checked) {
+                    clear = false;
+                    ctx.strokeStyle = color.value;
+                    ctx.fillStyle = fillcolorRadio.value;
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.closePath();
+                    lastX = x;
+                    lastY = y;
+                }
+                //橡皮擦
+                if (clear === true) {
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.closePath();
+                    lastX = x;
+                    lastY = y;
+                }
+                //画圆
+                if (circleadio.checked) {
+                    freshCvs();
+                    clear = false;
+                    ctx.beginPath();
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.strokeStyle = color.value;
+                    var radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+                    ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI, true)
+                    ctx.stroke();
+                    if (yesradio.checked) {
+                        ctx.fillStyle = fillcolorRadio.value
+                        ctx.fill()
+                    }
+                    ctx.closePath();
+                }
+                //画矩形
+                if (rectangleradio.checked) {
+                    clear = false;
+                    freshCvs();
+                    ctx.beginPath();
+                    ctx.lineWidth = lineWidth.value;
+                    ctx.rect(x, y, lastX - x, lastY - y);
+                    ctx.stroke(); //画矩形边
+        
+                    if (yesradio.checked) {
+                        ctx.fillStyle = fillcolorRadio.value
+                        ctx.fill()
+                    }
+                    ctx.closePath();
+                }
+            }
+        
+            //执行撤销操作,在每次鼠标按下和离开时获取图片信息并存储
+            previousStep.addEventListener('click', function undo() {
+               
+                for (let i = 0; i < 2; i++) {
+                    if (undoStack.length > 0) {
+                        redoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
+                        ctx.putImageData(undoStack.pop(), 0, 0);
+                    }
+                }
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                freshCvs();
+            })
+        
+            nextStep.addEventListener('click', function redo() {
+               
+                for (let i = 0; i < 2; i++) {
+                    if (redoStack.length > 0) {
+                       
+                        undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
+                        ctx.putImageData(redoStack.pop(), 0, 0);
+                    }
+                }
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                freshCvs();
+            })
+            //设置最多保存十张
+            let count = 0;
+        
+            //保存图片到容器里
+            store.addEventListener('click', function (e) {
+                // store.innerHTML=`已保存${count}张图片`;
+                if (count < 10) {
+                    var imgElement = document.createElement('img');
+                    var del = document.createElement('button')
+                    var stor = document.createElement('a')
+                    //添加保存和删除按钮,并设置样式
+                    stor.innerHTML = "下载";
+                    stor.type = "a";
+                    stor.style.backgroundColor = '#706e7c'
+                    stor.style.borderRadius = '8px 8px 8px 8px'
+                    stor.style.fontSize = '14px'
+                    stor.style.border = '2px solid black'
+                    //在容器中存储图片和按钮
+                    imgElement.style.width = '177px';
+                    imgElement.style.height = '105px';
+                    imgElement.style.backgroundColor = "white"
+                    imgElement.src = myCanvasComputer.toDataURL();
+                    showHistory.appendChild(imgElement)
+                    showHistory.appendChild(del)
+                    showHistory.appendChild(stor)
+                    count++;
+                    //为每个图片添加下载操作
+                    stor.addEventListener('click', function () {
+                        count--;
+                        //下载图片
+                        stor.href = imgElement.src;
+                        stor.download = 'masterpiece.png';
+                        //移除图片
+                        imgElement.remove();
+                        del.remove();
+                        stor.remove();
+                    })
+                    del.innerHTML = "删除";
+                    del.type = "button";
+                    //为每个图片添加删除操作
+                    del.addEventListener('click', function () {
+                        count--
+                        imgElement.remove();
+                        del.remove();
+                        stor.remove();
+                    })
+        
+                }
+                else {
+                    alert('保存十张到达上限!')
+                }
+            })
+        
+        
+        
+            //置顶下载链接
+            downloads.addEventListener('click', () => {
+                downloads.href = myCanvasComputer.toDataURL();
+                downloads.download = 'masterpiece.png';
+               
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                freshCvs();
+            })
+        
+            myCanvasComputer.addEventListener('dragover', e => {
+                e.stopPropagation();
+                e.preventDefault();
+        
+            });
+        //判断是否为图片
+            // function isImage(type) {
+            //     switch (type) {
+            //         case 'image/jpeg':
+            //         case 'image/png':
+            //         case 'image/gif':
+            //         case 'image/bmp':
+            //         case 'image/jpg':
+            //             return true;
+            //         default:
+            //             return false;
+            //     }
+            // }
+        
+            // 处理拖放文件列表
+            function handleFileSelect(evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                var files = evt.dataTransfer.files;
+                for (var i = 0, f; f = files[i]; i++) {
+                    var t = f.type ? f.type : 'n/a';
+                    reader = new FileReader();
+                    // let isImg = isImage(t);
+        
+                    // 处理得到的图片
+                    if (true) {
+                        reader.onload = (() => {
+                            return function (e) {
+                                var image = new Image();
+                                image.src = e.target.result;
+                                var hRatio;
+                                var wRatio;
+                                var l = 0;
+                                var t = 0;
+                                var maxWidth = 530;
+                                var maxHeight = 315;
+                                var Ratio = 1;
+                                var w = image.width;
+                                var h = image.height;
+                                wRatio = maxWidth / w;
+                                hRatio = maxHeight / h;
+                                // 图像大小超出绘画板大小，计算出缩放比例
+                                if (wRatio < 1 || hRatio < 1) {
+                                    Ratio = (wRatio <= hRatio ? wRatio : hRatio);
+                                }
+                                // 根据比例重新设置图像大小
+                                if (Ratio < 1) {
+                                    w = w * Ratio;
+                                    h = h * Ratio;
+                                }
+                                // 图片居中摆放
+                                l = (maxWidth - w) / 2;
+                                t = (maxHeight - h) / 2;
+        
+                                image.onload = function () {
+                                    // 居中缩放
+                                    ctx.drawImage(image, 0, 0, image.width, image.height, l, t, w, h);
+                                    
+                                    imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                                    freshCvs();
+                                }
+        
+                            };
+                        })(f)
+                        reader.readAsDataURL(f);
+                    }
+                }
+            }
+        
+            //初始化拖入效果
+            myCanvasComputer.addEventListener('drop', handleFileSelect, false);
+        
+        
+            // 拍照上传
+            let turndown = document.getElementById('turndown');
+            let videos = document.getElementById('vid')
+            let cmera = document.getElementById('cmera')
+            //判断摄像头状态
+            let cmeraStatus = true;
+            // 当用户点击拍照按钮时，将 Canvas 转换为图像并显示在页面上
+            cmera.addEventListener('click', () => {
+               
+                // 获取摄像头视频流
+                if (cmeraStatus) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then((stream) => {
+                            cmera.innerHTML = '拍照'
+                            videos.srcObject = stream;
+                            videos.play();
+                        });
+                    cmeraStatus = false;
+                }
+                //拍照上传
+                // 在 Canvas 上绘制视频帧
+                ctx.drawImage(videos, 0, 0, myCanvasComputer.width, myCanvasComputer.height);
+                
+                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
+                freshCvs();
+        
+            });
+        
+        
+            turndown.addEventListener('click', () => {
+               if(!cmeraStatus){
+                cmeraStatus = true;
+                cmera.innerHTML = '点击拍照作画'
+                
+                // 关闭摄像头
+                const stream = videos.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => {
+                    track.stop();
+                });
+                videos.srcObject = null;
+               }
+               
+               
+               
+            })
+        
+        
+        }
+
+        let locations=document.getElementById('locations')
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position=> {
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+    locations.innerHTML=`Latitude:${latitude}<br>Longitude:${longitude}`
+    });
+
+  } 
+  else {
+    alert("Geolocation is not supported by this browser.");
+    locations.innerHTML="未授权位置信息"
+  }
+ 
+        </script>
+    </body>
 
 </html>
