@@ -1,983 +1,272 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
- <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width" />
-    <title>超级画板</title>
-   
-    <style>@media screen and (orientation: landscape) {
-
-        #myCanvasMobile {
-            display: none;
-        }
-    
-        .canvas_container {
-            border: 2px solid black;
-            width: 590px;
-            height: 590px;
-            margin: 0 auto;
-    
-            background: url("../image/artboardForComputer.jpg") no-repeat;
-    
-        }
-    
-        #myCanvasComputer {
-            background-color: white;
-            margin-left: 27px;
-            margin-top: 71px;
-        }
-    
-        .contorller {
-    
-            height: 60px;
-            text-align: center;
-    
-        }
-    
-        #canvas_container {
-            display: flex;
-        }
-    
-        #showHistory {
-            border: 2px solid black;
-            width: 200px;
-            height: 600px;
-            flex: 2;
-        }
-    
-        .button {
-            display: inline;
-            width: 300px;
-        }
-    
-        .shapeSelect {
-            display: inline;
-            width: 300px;
-        }
-    
-        .lineWidthAndColor {
-            display: inline;
-            width: 300px;
-        }
-    
-        .fill {
-            display: inline;
-            width: 300px;
-        }
-    
-        #touchMessage {
-            width: 150px;
-    
-        }
-    
-        #locations {
-            display: block;
-        }
-    
-        #locationMessage {
-            width: 150px;
-            flex: 1;
-        }
-    
-        .storages {
-            display: inline;
-            width: 300px;
-        }
-    
-    
-        #vid {
-            margin-top: 30px;
-            margin-left: 160px;
-    
-            width: 267px;
-            height: 158px;
-        }
-    
-    
-        /* #vid{ */
-        /* display: none; */
-    
-        /* } */
-    
-    }
-    
-    @media screen and (orientation: portrait) {
-
-#myCanvasComputer {
-
-    display: none;
-}
-
-#myCanvasMobile {
-    margin-left: 11px;
-    margin-top: 12px;
-    background-color: white;
-}
-
-
-.canvas_container {
-    border: 2px solid black;
-    margin: 0 auto;
-    width: 360px;
-    height: 377px;
-    background: url("../image/artboardForMobile.jpg") no-repeat;
-
-}
-
-.contorller {
-    width: 350px;
-    height: 130px;
-}
-
-#showHistory {
-    border: 2px solid black;
-    width: 380px;
-    height: 350px;
-    margin: 0 auto;
-
-}
-
-#touchMessage {
-    width: 300px;
-    margin: 0 auto;
-    padding-left: 20px;
-    height: 60px;
-
-}
-
-#locationMessage {
-    width: 300px;
-    margin: 0 auto;
-    padding-left: 20px;
-}
-
-#vid {
-    background-color:  rgba(227, 242, 242, 0.479);
-    width: 170px;
-    height: 120px;
-    margin-left: 95px;
-}
-
-
-}* {
+  <head>
+    <meta charset="UTF-8" />
+    <title>zxx</title>
+  </head>
+      <!-- css部分 -->
+ <style>
+  body {
+    background-color: #000;
     margin: 0;
-    padding: 0 ;
-    transition: 0.5s;
-    background-color:#c2c1c73d;
+    overflow: hidden;
+    background-repeat: no-repeat;
 }
-
-.contorller{
-    padding-top: 10px;
-    background-color: #abb4c3;
-    margin: 0 auto;
+ </style>
+  <body>
+    <!-- 绘画爱心 -->
+    <canvas id="canvas" width="1400" height="600"></canvas>
+    <!-- js部分 -->
+  </body>
+  <script>
+var canvas = document.getElementById("canvas");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+// Initialize the GL context
+var gl = canvas.getContext('webgl');
+if (!gl) {
+    console.error("Unable to initialize WebGL.");
 }
-#showHistory{
-    background-color: #7d83a3;
-    
+//Time step
+var dt = 0.015;
+//Time
+var time = 0.0;
+//************** Shader sources **************
+var vertexSource = `
+attribute vec2 position;
+void main() {
+	gl_Position = vec4(position, 0.0, 1.0);
 }
-#touchMessage{  
-    border: 2px solid black;
-    background-color: #abb4c3;
-    
-}
-
-#locationMessage{
-    border: 2px solid black;
-    background-color: #abb4c3;
-    border: 1px solid black;
-}
-button{
-background-color: #706e7c;
- border-radius: 8px 8px 8px 8px;
-
-
-}
-#myCanvasComputer{
-    background-color: white;
-}
-#download{
-    font-size: 14px;
-    border: 1px solid black;
-    background-color: #706e7c;
-    color: black;
-    text-decoration: none;
-    border-radius: 8px 8px 8px 8px;
-    
-
-}
-
-
-</style>
-    
- </head>
-
-    <body>
-        <div class="contorller">
-            <div class="button"><button id="clearButton">清空画板</button>
-                <button id="eraserButton">橡皮擦</button>
-                <button id="previousStep">撤回到上一步</button>
-                <button id="nextStep"> 撤回到下一步</button>
-            </div>
-            
-            <div class="shapeSelect">
-                <label for="shapeSelect">绘图类型:</label>
-
-                <label for="drawing">画笔:</label>
-                <input type="radio" id="drawing" name="draw" checked>
-
-                <label for="circleadio">圆:</label>
-                <input type="radio" id="circleadio" name="draw">
-
-                <label for="rectangleradio">矩形:</label>
-                <input type="radio" id="rectangleradio" name="draw">
-            </div>
-            
-            <div class="lineWidthAndColor">
-                <label for="lineWidth">线宽:</label>
-                <select id="lineWidth">
-                    <option value="1">1</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="7">7</option>
-                    <option value="9">9</option>
-
-                </select>
-                <label for="color">画笔颜色:</label>
-                <input type="color" id="color">
-
-            </div>
-            <div class="fill">
-                是否填充:
-                <input type="radio" id="yesradio" name="fillStyle" value="1">
-                <label for="yesradio">是</label>
-                <input type="radio" id="noradio" name="fillStyle" value="0" checked>
-                <label for="noradio">否</label>
-                <label for="fillcolorRadio">填充颜色:</label>
-                <input type="color" id="fillcolorRadio">
-            </div>
-            <div class="storages">
-                <button id="cmera">点击拍照作画</button>
-                <button id="turndown">关闭摄像头</button>
-                <button id="store">保存</button>
-                <!-- <button id="download"> 下载</button> -->
-                <a href="#" id="download"> 下载</a>
-
-            </div>
-          
-              
-        </div>
-
-        <div id="canvas_container">
-            <div id="touchMessage">触点位置和类型:
-                <div id="touchPosion"></div>
-                <div id="touchtype"></div>
-            </div>
-                <div id="locationMessage">当前创作地点:
-                   <div id="locations"></div>
-                </div>
-
-                <div class="canvas_container">
-                    <canvas id="myCanvasMobile" width="341" height="242"></canvas>
-                    <canvas id="myCanvasComputer" width="530" height="315"></canvas>
-                    <video src="#" id="vid"></video>
-                </div>
-            
-            <div id="showHistory" >
-                <div id="topic">绘画保存记录:</div>
-            </div>
-        </div>
-
-       <script>
-        let myCanvasMobile = document.getElementById('myCanvasMobile')
-        let myCanvasComputer = document.getElementById('myCanvasComputer')
-        let clearButton = document.getElementById('clearButton')
-        let eraserButton = document.getElementById('eraserButton')
-        let previousStep = document.getElementById('previousStep')
-        let nextStep = document.getElementById('nextStep')
-        let drawing = document.getElementById('drawing')
-        let circleadio = document.getElementById('circleadio')
-        let rectangleradio = document.getElementById('rectangleradio')
-        let lineWidth = document.getElementById('lineWidth')
-        let color = document.getElementById('color')
-        let yesradio = document.getElementById('yesradio')
-        let noradio = document.getElementById('noradio')
-        let fillcolorRadio = document.getElementById('fillcolorRadio')
-        let store = document.getElementById('store')
-        let dawnload = document.querySelector('download')
-        let touchMessage = document.getElementById('touchMessage')
-        let touchtype = document.getElementById('touchtype')
-        let touchPosion = document.getElementById('touchPosion')
-        let downloads = document.getElementById('download')
-        
-        if (window.orientation === 0 || window.orientation === 180) {
-            // 竖屏模式下的代码
-            touchMessage.innerHTML = '横屏触点类型和位置:'
-            // touchMessage.innerHTML = '横屏'
-            const ctx = myCanvasMobile.getContext('2d');
-            //现在画布上填充白色,方便保存
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
-            //记录保存
-            let undoStack = [];
-            let redoStack = [];
-            //判断当前状态
-            let isDrawing = false;
-            //位置
-            let lastX, lastY;
-            //是否在使用橡皮擦
-            let clear = false;
-            //清空画板
-            clearButton.addEventListener("click", function () {
-                ctx.clearRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, myCanvasMobile.width, myCanvasMobile.height);
-        
-                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                freshCvs();
-            });
-            //橡皮擦
-            eraserButton.addEventListener("click", function () {
-                clear = true;
-                drawing.checked = false;
-                circleadio.checked = false;
-                rectangleradio.checked = false;
-            });
-        //   •	touchstart：手指触摸屏幕事件；
-        // •	touchmove：手指在屏幕上滑动事件；
-        // •	touchend：手指离开屏幕事件；
-        // •	touchcancel：触摸事件被取消事件。
-        
-        
-        
-            //定义存储画板状态,null为没有状态,实现画圆画矩形无延迟
-            let imageData = null;
-        
-            myCanvasMobile.addEventListener("touchstart", evt=> {
-                evt.preventDefault()
-                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
-                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
-                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)}    `
-                isDrawing = true;
-                lastX = evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset;
-                lastY = evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset;
-                //获取图片信息存储到堆栈中
-                undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
-                redoStack = [];
-        
-            });
-            myCanvasMobile.addEventListener("touchmove", evt=> {
-                evt.preventDefault()
-                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
-                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
-                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)} `
-        
-                if (isDrawing) {
-                    draw(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset,
-                        evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset);
-        
-                }
-            });
-        
-            myCanvasMobile.addEventListener("touchend", evt=> {
-                evt.preventDefault()
-                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                touchMessage.innerHTML = `横屏触点类型和位置:(${evt.type})<br>
-                X=${(evt.changedTouches[0].clientX - myCanvasMobile.offsetLeft + window.pageXOffset).toFixed(4)}<br>
-                Y=${(evt.changedTouches[0].clientY - myCanvasMobile.offsetTop + window.pageYOffset).toFixed(4)} `
-                isDrawing = false;
-                //获取图片信息存储到堆栈中
-                undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
-                redoStack = [];
-            });
-        
-        
-            //实时轨迹
-            let freshCvs = () => {
-                ctx.clearRect(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                if (imageData) {
-                    ctx.putImageData(imageData, 0, 0, 0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                }
-            }
-            draw = (x, y) => {
-                //画线条
-                if (drawing.checked) {
-                    clear = false;
-                    ctx.strokeStyle = color.value;
-                    ctx.fillStyle = fillcolorRadio.value;
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.closePath();
-                    lastX = x;
-                    lastY = y;
-                }
-                //橡皮擦
-                if (clear === true) {
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.closePath();
-                    lastX = x;
-                    lastY = y;
-                }
-                //画圆
-                if (circleadio.checked) {
-                    freshCvs();
-                    clear = false;
-                    ctx.beginPath();
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.strokeStyle = color.value;
-                    var radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
-                    ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI, true)
-                    ctx.stroke();
-                    if (yesradio.checked) {
-                        ctx.fillStyle = fillcolorRadio.value
-                        ctx.fill()
-                    }
-                    ctx.closePath();
-                }
-                //画矩形
-                if (rectangleradio.checked) {
-                    clear = false;
-                    freshCvs();
-                    ctx.beginPath();
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.rect(x, y, lastX - x, lastY - y);
-                    ctx.stroke(); //画矩形边
-                    if (yesradio.checked) {
-                        ctx.fillStyle = fillcolorRadio.value
-                        ctx.fill()
-                    }
-                    ctx.closePath();
-                }
-            }
-        
-            //执行撤销操作,在每次鼠标按下和离开时获取图片信息并存储到堆栈
-            previousStep.addEventListener('click', function undo() {
-                for (let i = 0; i < 2; i++) {
-                    if (undoStack.length > 0) {
-                        redoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
-                        ctx.putImageData(undoStack.pop(), 0, 0);
-                    }
-                }
-                
-                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                freshCvs();
-            })
-        
-            nextStep.addEventListener('click', function redo() {
-                for (let i = 0; i < 2; i++) {
-                    if (redoStack.length > 0) {
-                        undoStack.push(ctx.getImageData(0, 0, myCanvasMobile.width, myCanvasMobile.height));
-                        ctx.putImageData(redoStack.pop(), 0, 0);
-                    }
-                }
-                
-                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                freshCvs();
-            })
-            //设置最多保存十张
-            let count = 0;
-        
-            //保存图片到容器里
-            store.addEventListener('click', e=> {
-                // store.innerHTML=`已保存${count}张图片`;
-                if (count < 6) {
-                    var imgElement = document.createElement('img');
-                    var del = document.createElement('button')
-                    var stor = document.createElement('a')
-                    //删除图片设置样式
-                    
-                    //下载图片并设置样式
-                    stor.innerHTML = "下载";
-                    stor.type = "a";
-                    stor.style.backgroundColor = '#706e7c'
-                    stor.style.borderRadius = '8px 8px 8px 8px'
-                    stor.style.fontSize = '14px'
-                    stor.style.border = '1px solid black'
-                    
-                    //在容器中存储图片和按钮
-                    imgElement.style.width = '130px';
-                    imgElement.style.height = '95px';
-                    imgElement.style.backgroundColor = "white"
-                    imgElement.src = myCanvasMobile.toDataURL();
-                    showHistory.appendChild(del)
-                    showHistory.appendChild(stor)
-                    showHistory.appendChild(imgElement)
-                    count++;
-                    //为每个图片添加下载操作
-                    stor.addEventListener('click', function () {
-                        count--;
-                        //下载图片
-                        stor.href = imgElement.src;
-                        stor.download = 'masterpiece.png';
-                        //移除图片
-                        imgElement.remove();
-                        del.remove();
-                        stor.remove();
-                    })
-                    del.innerHTML = "删除";
-                    del.type = "button";
-                    //为每个图片添加删除操作
-                    del.addEventListener('click', function () {
-                        count--
-                        imgElement.remove();
-                        del.remove();
-                        stor.remove();
-                    })
-        
-                }
-                else {
-                    alert('保存六张图片到达上限!')
-                }
-            })
-        
-        
-        
-            //置顶下载链接
-            downloads.addEventListener('click', () => {
-                downloads.href = myCanvasMobile.toDataURL();
-                downloads.download = 'masterpiece.png';
-            })
-        
-         
-        
-        
-            // 拍照上传
-            let turndown = document.getElementById('turndown');
-            let videos = document.getElementById('vid')
-            let cmera = document.getElementById('cmera')
-            //判断摄像头状态
-            let cmeraStatus = true;
-            // 当用户点击拍照按钮时，将 Canvas 转换为图像并显示在页面上
-            cmera.addEventListener('click', () => {
-               
-                // 获取摄像头视频流
-                if (cmeraStatus) {
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then((stream) => {
-                            cmera.innerHTML = '拍照'
-                            videos.srcObject = stream;
-                            videos.play();
-                        });
-                    cmeraStatus = false;
-                }
-                //拍照上传
-                // 在 Canvas 上绘制视频帧
-                ctx.drawImage(videos, 0, 0, myCanvasMobile.width, myCanvasMobile.height);
-               
-                imageData = ctx.getImageData(0, 0, myCanvasMobile.offsetWidth, myCanvasMobile.offsetHeight)
-                freshCvs();
-            });
-        
-        
-            turndown.addEventListener('click', () => {
-               if(!cmeraStatus){
-                cmeraStatus = true;
-                cmera.innerHTML = '点击拍照作画'
-                // 关闭摄像头
-                const stream = videos.srcObject;
-                const tracks = stream.getTracks();
-                tracks.forEach(track => {
-                    track.stop();
-                });
-                videos.srcObject = null;
-               }
-               
-               
-               
-            })
-        
-        
-        }
-        
-        
-        
-        // if (window.orientation === 90 || window.orientation === -90)
-        else {
-            // 横屏模式下的代码
-            // touchMessage.innerHTML = '横屏'
-            const ctx = myCanvasComputer.getContext('2d');
-            //现在画布上填充白色,方便保存
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
-            //记录保存
-            let undoStack = [];
-            let redoStack = [];
-            //判断当前状态
-            let isDrawing = false;
-            //位置
-            let lastX, lastY;
-            //是否在使用橡皮擦
-            let clear = false;
-            //清空画板
-            clearButton.addEventListener("click", function () {
-                ctx.clearRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, myCanvasComputer.width, myCanvasComputer.height);
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                freshCvs();
-            });
-            //橡皮擦
-            eraserButton.addEventListener("click", function () {
-                clear = true;
-                drawing.checked = false;
-                circleadio.checked = false;
-                rectangleradio.checked = false;
-            });
-            //      •	click：鼠标单击事件；
-            // •	dblclick：鼠标双击事件；
-            // •	mousedown：鼠标按下事件；
-            // •	mouseup：鼠标松开事件；
-            // •	mousemove：鼠标移动事件；
-            // •	mouseover：鼠标移入事件；
-            // •	mouseout：鼠标移出事件。
-        
-        
-            //定义存储画板状态,null为没有状态,实现画圆画矩形无延迟
-            let imageData = null;
-        
-            myCanvasComputer.addEventListener("mousedown", function (evt) {
-                evt.preventDefault()
-                touchtype.innerHTML = `(${evt.type})`
-                isDrawing = true;
-                lastX = evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset;
-                lastY = evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset;
-                //获取图片信息存储到堆栈中
-                undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
-                redoStack = [];
-        
-            });
-            myCanvasComputer.addEventListener("mousemove", function (evt) {
-                evt.preventDefault()
-                touchtype.innerHTML = `(${evt.type})`
-                touchPosion.innerHTML = `X=${evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset}<br>
-                Y=${evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset}`
-        
-                if (isDrawing) {
-                    draw(evt.clientX - myCanvasComputer.offsetLeft + window.pageXOffset,
-                        evt.clientY - myCanvasComputer.offsetTop + window.pageYOffset);
-        
-                }
-            });
-        
-            myCanvasComputer.addEventListener("mouseup", function (evt) {
-                evt.preventDefault()
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                touchtype.innerHTML = `(${evt.type})`
-                isDrawing = false;
-                //获取图片信息存储到堆栈中
-                undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
-                redoStack = [];
-            });
-        
-        
-            //实时轨迹关键代码
-            let freshCvs = () => {
-                ctx.clearRect(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                if (imageData) {
-                    ctx.putImageData(imageData, 0, 0, 0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                }
-            }
-            draw = (x, y) => {
-                //画线条
-                if (drawing.checked) {
-                    clear = false;
-                    ctx.strokeStyle = color.value;
-                    ctx.fillStyle = fillcolorRadio.value;
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.closePath();
-                    lastX = x;
-                    lastY = y;
-                }
-                //橡皮擦
-                if (clear === true) {
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.closePath();
-                    lastX = x;
-                    lastY = y;
-                }
-                //画圆
-                if (circleadio.checked) {
-                    freshCvs();
-                    clear = false;
-                    ctx.beginPath();
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.strokeStyle = color.value;
-                    var radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
-                    ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI, true)
-                    ctx.stroke();
-                    if (yesradio.checked) {
-                        ctx.fillStyle = fillcolorRadio.value
-                        ctx.fill()
-                    }
-                    ctx.closePath();
-                }
-                //画矩形
-                if (rectangleradio.checked) {
-                    clear = false;
-                    freshCvs();
-                    ctx.beginPath();
-                    ctx.lineWidth = lineWidth.value;
-                    ctx.rect(x, y, lastX - x, lastY - y);
-                    ctx.stroke(); //画矩形边
-        
-                    if (yesradio.checked) {
-                        ctx.fillStyle = fillcolorRadio.value
-                        ctx.fill()
-                    }
-                    ctx.closePath();
-                }
-            }
-        
-            //执行撤销操作,在每次鼠标按下和离开时获取图片信息并存储
-            previousStep.addEventListener('click', function undo() {
-               
-                for (let i = 0; i < 2; i++) {
-                    if (undoStack.length > 0) {
-                        redoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
-                        ctx.putImageData(undoStack.pop(), 0, 0);
-                    }
-                }
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                freshCvs();
-            })
-        
-            nextStep.addEventListener('click', function redo() {
-               
-                for (let i = 0; i < 2; i++) {
-                    if (redoStack.length > 0) {
-                       
-                        undoStack.push(ctx.getImageData(0, 0, myCanvasComputer.width, myCanvasComputer.height));
-                        ctx.putImageData(redoStack.pop(), 0, 0);
-                    }
-                }
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                freshCvs();
-            })
-            //设置最多保存十张
-            let count = 0;
-        
-            //保存图片到容器里
-            store.addEventListener('click', function (e) {
-                // store.innerHTML=`已保存${count}张图片`;
-                if (count < 10) {
-                    var imgElement = document.createElement('img');
-                    var del = document.createElement('button')
-                    var stor = document.createElement('a')
-                    //添加保存和删除按钮,并设置样式
-                    stor.innerHTML = "下载";
-                    stor.type = "a";
-                    stor.style.backgroundColor = '#706e7c'
-                    stor.style.borderRadius = '8px 8px 8px 8px'
-                    stor.style.fontSize = '14px'
-                    stor.style.border = '2px solid black'
-                    //在容器中存储图片和按钮
-                    imgElement.style.width = '177px';
-                    imgElement.style.height = '105px';
-                    imgElement.style.backgroundColor = "white"
-                    imgElement.src = myCanvasComputer.toDataURL();
-                    showHistory.appendChild(imgElement)
-                    showHistory.appendChild(del)
-                    showHistory.appendChild(stor)
-                    count++;
-                    //为每个图片添加下载操作
-                    stor.addEventListener('click', function () {
-                        count--;
-                        //下载图片
-                        stor.href = imgElement.src;
-                        stor.download = 'masterpiece.png';
-                        //移除图片
-                        imgElement.remove();
-                        del.remove();
-                        stor.remove();
-                    })
-                    del.innerHTML = "删除";
-                    del.type = "button";
-                    //为每个图片添加删除操作
-                    del.addEventListener('click', function () {
-                        count--
-                        imgElement.remove();
-                        del.remove();
-                        stor.remove();
-                    })
-        
-                }
-                else {
-                    alert('保存十张到达上限!')
-                }
-            })
-        
-        
-        
-            //置顶下载链接
-            downloads.addEventListener('click', () => {
-                downloads.href = myCanvasComputer.toDataURL();
-                downloads.download = 'masterpiece.png';
-               
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                freshCvs();
-            })
-        
-            myCanvasComputer.addEventListener('dragover', e => {
-                e.stopPropagation();
-                e.preventDefault();
-        
-            });
-        //判断是否为图片
-            // function isImage(type) {
-            //     switch (type) {
-            //         case 'image/jpeg':
-            //         case 'image/png':
-            //         case 'image/gif':
-            //         case 'image/bmp':
-            //         case 'image/jpg':
-            //             return true;
-            //         default:
-            //             return false;
-            //     }
-            // }
-        
-            // 处理拖放文件列表
-            function handleFileSelect(evt) {
-                evt.stopPropagation();
-                evt.preventDefault();
-                var files = evt.dataTransfer.files;
-                for (var i = 0, f; f = files[i]; i++) {
-                    var t = f.type ? f.type : 'n/a';
-                    reader = new FileReader();
-                    // let isImg = isImage(t);
-        
-                    // 处理得到的图片
-                    if (true) {
-                        reader.onload = (() => {
-                            return function (e) {
-                                var image = new Image();
-                                image.src = e.target.result;
-                                var hRatio;
-                                var wRatio;
-                                var l = 0;
-                                var t = 0;
-                                var maxWidth = 530;
-                                var maxHeight = 315;
-                                var Ratio = 1;
-                                var w = image.width;
-                                var h = image.height;
-                                wRatio = maxWidth / w;
-                                hRatio = maxHeight / h;
-                                // 图像大小超出绘画板大小，计算出缩放比例
-                                if (wRatio < 1 || hRatio < 1) {
-                                    Ratio = (wRatio <= hRatio ? wRatio : hRatio);
-                                }
-                                // 根据比例重新设置图像大小
-                                if (Ratio < 1) {
-                                    w = w * Ratio;
-                                    h = h * Ratio;
-                                }
-                                // 图片居中摆放
-                                l = (maxWidth - w) / 2;
-                                t = (maxHeight - h) / 2;
-        
-                                image.onload = function () {
-                                    // 居中缩放
-                                    ctx.drawImage(image, 0, 0, image.width, image.height, l, t, w, h);
-                                    
-                                    imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                                    freshCvs();
-                                }
-        
-                            };
-                        })(f)
-                        reader.readAsDataURL(f);
-                    }
-                }
-            }
-        
-            //初始化拖入效果
-            myCanvasComputer.addEventListener('drop', handleFileSelect, false);
-        
-        
-            // 拍照上传
-            let turndown = document.getElementById('turndown');
-            let videos = document.getElementById('vid')
-            let cmera = document.getElementById('cmera')
-            //判断摄像头状态
-            let cmeraStatus = true;
-            // 当用户点击拍照按钮时，将 Canvas 转换为图像并显示在页面上
-            cmera.addEventListener('click', () => {
-               
-                // 获取摄像头视频流
-                if (cmeraStatus) {
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then((stream) => {
-                            cmera.innerHTML = '拍照'
-                            videos.srcObject = stream;
-                            videos.play();
-                        });
-                    cmeraStatus = false;
-                }
-                //拍照上传
-                // 在 Canvas 上绘制视频帧
-                ctx.drawImage(videos, 0, 0, myCanvasComputer.width, myCanvasComputer.height);
-                
-                imageData = ctx.getImageData(0, 0, myCanvasComputer.offsetWidth, myCanvasComputer.offsetHeight)
-                freshCvs();
-        
-            });
-        
-        
-            turndown.addEventListener('click', () => {
-               if(!cmeraStatus){
-                cmeraStatus = true;
-                cmera.innerHTML = '点击拍照作画'
-                
-                // 关闭摄像头
-                const stream = videos.srcObject;
-                const tracks = stream.getTracks();
-                tracks.forEach(track => {
-                    track.stop();
-                });
-                videos.srcObject = null;
-               }
-               
-               
-               
-            })
-        
-        
-        }
-
-        let locations=document.getElementById('locations')
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position=> {
-      var latitude = position.coords.latitude;
-      var longitude = position.coords.longitude;
-    locations.innerHTML=`Latitude:${latitude}<br>Longitude:${longitude}`
-    });
-
-  } 
-  else {
-    alert("Geolocation is not supported by this browser.");
-    locations.innerHTML="未授权位置信息"
-  }
+`;
  
-        </script>
-    </body>
-
+var fragmentSource = `
+precision highp float;
+uniform float width;
+uniform float height;
+vec2 resolution = vec2(width, height);
+uniform float time;
+#define POINT_COUNT 8
+vec2 points[POINT_COUNT];
+const float speed = -0.5;
+const float len = 0.25;
+float intensity = 0.9;
+float radius = 0.015;
+//https://www.shadertoy.com/view/MlKcDD
+//Signed distance to a quadratic bezier
+float sdBezier(vec2 pos, vec2 A, vec2 B, vec2 C){    
+	vec2 a = B - A;
+	vec2 b = A - 2.0*B + C;
+	vec2 c = a * 2.0;
+	vec2 d = A - pos;
+	float kk = 1.0 / dot(b,b);
+	float kx = kk * dot(a,b);
+	float ky = kk * (2.0*dot(a,a)+dot(d,b)) / 3.0;
+	float kz = kk * dot(d,a);      
+	float res = 0.0;
+	float p = ky - kx*kx;
+	float p3 = p*p*p;
+	float q = kx*(2.0*kx*kx - 3.0*ky) + kz;
+	float h = q*q + 4.0*p3;
+	if(h >= 0.0){ 
+		h = sqrt(h);
+		vec2 x = (vec2(h, -h) - q) / 2.0;
+		vec2 uv = sign(x)*pow(abs(x), vec2(1.0/3.0));
+		float t = uv.x + uv.y - kx;
+		t = clamp( t, 0.0, 1.0 );
+		// 1 root
+		vec2 qos = d + (c + b*t)*t;
+		res = length(qos);
+	}else{
+		float z = sqrt(-p);
+		float v = acos( q/(p*z*2.0) ) / 3.0;
+		float m = cos(v);
+		float n = sin(v)*1.732050808;
+		vec3 t = vec3(m + m, -n - m, n - m) * z - kx;
+		t = clamp( t, 0.0, 1.0 );
+		// 3 roots
+		vec2 qos = d + (c + b*t.x)*t.x;
+		float dis = dot(qos,qos);
+        
+		res = dis;
+		qos = d + (c + b*t.y)*t.y;
+		dis = dot(qos,qos);
+		res = min(res,dis);
+		
+		qos = d + (c + b*t.z)*t.z;
+		dis = dot(qos,qos);
+		res = min(res,dis);
+		res = sqrt( res );
+	}
+    
+	return res;
+}
+//http://mathworld.wolfram.com/HeartCurve.html
+vec2 getHeartPosition(float t){
+	return vec2(16.0 * sin(t) * sin(t) * sin(t),
+							-(13.0 * cos(t) - 5.0 * cos(2.0*t)
+							- 2.0 * cos(3.0*t) - cos(4.0*t)));
+}
+//https://www.shadertoy.com/view/3s3GDn
+float getGlow(float dist, float radius, float intensity){
+	return pow(radius/dist, intensity);
+}
+float getSegment(float t, vec2 pos, float offset, float scale){
+	for(int i = 0; i < POINT_COUNT; i++){
+		points[i] = getHeartPosition(offset + float(i)*len + fract(speed * t) * 6.28);
+	}
+    
+	vec2 c = (points[0] + points[1]) / 2.0;
+	vec2 c_prev;
+	float dist = 10000.0;
+    
+	for(int i = 0; i < POINT_COUNT-1; i++){
+		//https://tinyurl.com/y2htbwkm
+		c_prev = c;
+		c = (points[i] + points[i+1]) / 2.0;
+		dist = min(dist, sdBezier(pos, scale * c_prev, scale * points[i], scale * c));
+	}
+	return max(0.0, dist);
+}
+void main(){
+	vec2 uv = gl_FragCoord.xy/resolution.xy;
+	float widthHeightRatio = resolution.x/resolution.y;
+	vec2 centre = vec2(0.5, 0.5);
+	vec2 pos = centre - uv;
+	pos.y /= widthHeightRatio;
+	//Shift upwards to centre heart
+	pos.y += 0.02;
+	float scale = 0.000015 * height;
+	
+	float t = time;
+    
+	//Get first segment
+	float dist = getSegment(t, pos, 0.0, scale);
+	float glow = getGlow(dist, radius, intensity);
+    
+	vec3 col = vec3(0.0);
+    
+	//White core
+	col += 10.0*vec3(smoothstep(0.003, 0.001, dist));
+	//Pink glow
+	col += glow * vec3(0.94,0.14,0.4);
+    
+	//Get second segment
+	dist = getSegment(t, pos, 3.4, scale);
+	glow = getGlow(dist, radius, intensity);
+    
+	//White core
+	col += 10.0*vec3(smoothstep(0.003, 0.001, dist));
+	//Blue glow
+	col += glow * vec3(0.2,0.6,1.0);
+        
+	//Tone mapping
+	col = 1.0 - exp(-col);
+	//Output to screen
+ 	gl_FragColor = vec4(col,1.0);
+}
+`;
+ 
+//************** Utility functions **************
+ 
+window.addEventListener('resize', onWindowResize, false);
+ 
+function onWindowResize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1f(widthHandle, window.innerWidth);
+    gl.uniform1f(heightHandle, window.innerHeight);
+}
+ 
+ 
+//Compile shader and combine with source
+function compileShader(shaderSource, shaderType) {
+    var shader = gl.createShader(shaderType);
+    gl.shaderSource(shader, shaderSource);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw "Shader compile failed with: " + gl.getShaderInfoLog(shader);
+    }
+    return shader;
+}
+ 
+//From https://codepen.io/jlfwong/pen/GqmroZ
+//Utility to complain loudly if we fail to find the attribute/uniform
+function getAttribLocation(program, name) {
+    var attributeLocation = gl.getAttribLocation(program, name);
+    if (attributeLocation === -1) {
+        throw 'Cannot find attribute ' + name + '.';
+    }
+    return attributeLocation;
+}
+ 
+function getUniformLocation(program, name) {
+    var attributeLocation = gl.getUniformLocation(program, name);
+    if (attributeLocation === -1) {
+        throw 'Cannot find uniform ' + name + '.';
+    }
+    return attributeLocation;
+}
+ 
+//************** Create shaders **************
+ 
+//Create vertex and fragment shaders
+var vertexShader = compileShader(vertexSource, gl.VERTEX_SHADER);
+var fragmentShader = compileShader(fragmentSource, gl.FRAGMENT_SHADER);
+ 
+//Create shader programs
+var program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+ 
+gl.useProgram(program);
+ 
+//Set up rectangle covering entire canvas 
+var vertexData = new Float32Array([-1.0, 1.0, // top left
+    -1.0, -1.0, // bottom left
+    1.0, 1.0, // top right
+    1.0, -1.0, // bottom right
+]);
+ 
+//Create vertex buffer
+var vertexDataBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexDataBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+ 
+// Layout of our data in the vertex buffer
+var positionHandle = getAttribLocation(program, 'position');
+ 
+gl.enableVertexAttribArray(positionHandle);
+gl.vertexAttribPointer(positionHandle,
+    2, // position is a vec2 (2 values per component)
+    gl.FLOAT, // each component is a float
+    false, // don't normalize values
+    2 * 4, // two 4 byte float components per vertex (32 bit float is 4 bytes)
+    0 // how many bytes inside the buffer to start from
+);
+ 
+//Set uniform handle
+var timeHandle = getUniformLocation(program, 'time');
+var widthHandle = getUniformLocation(program, 'width');
+var heightHandle = getUniformLocation(program, 'height');
+ 
+gl.uniform1f(widthHandle, window.innerWidth);
+gl.uniform1f(heightHandle, window.innerHeight);
+ 
+function draw() {
+    //Update time
+    time += dt;
+ 
+    //Send uniforms to program
+    gl.uniform1f(timeHandle, time);
+    //Draw a triangle strip connecting vertices 0-4
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+ 
+    requestAnimationFrame(draw);
+}
+ 
+draw();
+  </script>
 </html>
